@@ -2,7 +2,6 @@ from app.knights_prep.prep import Armour, Weapon, Potion
 
 
 class Knight:
-    knight_dict = {}
 
     def __init__(self, name: str, power: int, hp: int) -> None:
         self.name = name
@@ -12,9 +11,6 @@ class Knight:
         self.protection = 0
         self.weapon = None
         self.potion = None
-        # Knight.knight_dict[self.name] = self
-        # key = name.lower().replace(" ", "_")
-        Knight.knight_dict[name.lower().replace(" ", "_")] = self
 
     def get_armoured(self, armour: "Armour") -> None:
         self.armour_list.append(armour)

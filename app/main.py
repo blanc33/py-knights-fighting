@@ -90,45 +90,38 @@ KNIGHTS = {
 
 
 def battle(knights: dict) -> dict:
-    for knight in knights.values():
-        Knight(knight["name"], knight["power"], knight["hp"])
+    knights_str_list = list(KNIGHTS)
 
-    for knight in knights.values():
-        key = knight["name"].lower().replace(" ", "_")
+    for i, knight in enumerate(knights.values()):
+        current_kn = Knight(knight["name"], knight["power"], knight["hp"])
         for arm in knight["armour"]:
             ar = Armour(**arm)
-            Knight.knight_dict[key].get_armoured(ar)
-        Knight.knight_dict[key].get_weapon(Weapon(**knight["weapon"]))
+            current_kn.get_armoured(ar)
+        current_kn.get_weapon(Weapon(**knight["weapon"]))
         if knight["potion"]:
-            Knight.knight_dict[key].drink_potion(
+            current_kn.drink_potion(
                 Potion(knight["potion"]["name"], **knight["potion"]["effect"])
             )
+        locals()[knights_str_list[i]] = current_kn
 
-    knights = Knight.knight_dict
-    knights["lancelot"].hp -= (knights["mordred"].power
-                               - knights["lancelot"].protection)
-    knights["mordred"].hp -= (knights["lancelot"].power
-                              - knights["mordred"].protection)
-    if knights["lancelot"].hp <= 0:
-        knights["lancelot"].hp = 0
-    if knights["mordred"].hp <= 0:
-        knights["mordred"].hp = 0
+    print(locals())
 
-    knights["arthur"].hp -= (knights["red_knight"].power
-                             - knights["arthur"].protection)
-    knights["red_knight"].hp -= (knights["arthur"].power
-                                 - knights["red_knight"].protection)
-    if knights["arthur"].hp <= 0:
-        knights["arthur"].hp = 0
-    if knights["red_knight"].hp <= 0:
-        knights["red_knight"].hp = 0
+    for k1, k2 in [("lancelot", "mordred"), ("arthur", "red_knight")]:
+        locals()[k1].hp -= (locals()[k2].power
+                            - locals()[k1].protection)
+        locals()[k2].hp -= (locals()[k1].power
+                            - locals()[k2].protection)
+        if locals()[k1].hp <= 0:
+            locals()[k1].hp = 0
+        if locals()[k2].hp <= 0:
+            locals()[k2].hp = 0
 
     return \
         {
-            knights["lancelot"].name: knights["lancelot"].hp,
-            knights["arthur"].name: knights["arthur"].hp,
-            knights["mordred"].name: knights["mordred"].hp,
-            knights["red_knight"].name: knights["red_knight"].hp
+            locals()["lancelot"].name: locals()["lancelot"].hp,
+            locals()["arthur"].name: locals()["arthur"].hp,
+            locals()["mordred"].name: locals()["mordred"].hp,
+            locals()["red_knight"].name: locals()["red_knight"].hp
         }
 
 
