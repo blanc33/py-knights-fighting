@@ -89,40 +89,38 @@ KNIGHTS = {
 }
 
 
-def battle(knights: dict) -> dict:
-    knights_str_list = list(KNIGHTS)
+def fight(knight_a: Knight, knight_b: Knight) -> None:
+    knight_a.hp -= max(0, knight_b.power - knight_a.protection)
+    knight_b.hp -= max(0, knight_a.power - knight_b.protection)
+    knight_a.hp = max(knight_a.hp, 0)
+    knight_b.hp = max(knight_b.hp, 0)
 
-    for i, knight in enumerate(knights.values()):
-        current_kn = Knight(knight["name"], knight["power"], knight["hp"])
-        for arm in knight["armour"]:
-            ar = Armour(**arm)
-            current_kn.get_armoured(ar)
-        current_kn.get_weapon(Weapon(**knight["weapon"]))
-        if knight["potion"]:
-            current_kn.drink_potion(
-                Potion(knight["potion"]["name"], **knight["potion"]["effect"])
+
+def battle(knights: dict) -> dict[str, int]:
+    prepared_knights: dict[str, Knight] = {}
+
+    for key, knight_data in knights.items():
+        current_knight = Knight(
+            knight_data["name"], knight_data["power"], knight_data["hp"]
+        )
+
+        for armour_data in knight_data["armour"]:
+            armour_part = Armour(**armour_data)
+            current_knight.get_armoured(armour_part)
+
+        current_knight.get_weapon(Weapon(**knight_data["weapon"]))
+
+        if knight_data["potion"]:
+            potion_effects = knight_data["potion"]["effect"]
+            potion_obj = Potion(
+                knight_data["potion"]["name"], **potion_effects
             )
-        locals()[knights_str_list[i]] = current_kn
+            current_knight.drink_potion(potion_obj)
 
-    print(locals())
+        prepared_knights[key] = current_knight
 
-    for k1, k2 in [("lancelot", "mordred"), ("arthur", "red_knight")]:
-        locals()[k1].hp -= (locals()[k2].power
-                            - locals()[k1].protection)
-        locals()[k2].hp -= (locals()[k1].power
-                            - locals()[k2].protection)
-        if locals()[k1].hp <= 0:
-            locals()[k1].hp = 0
-        if locals()[k2].hp <= 0:
-            locals()[k2].hp = 0
+    # Simulate the fights
+    fight(prepared_knights["lancelot"], prepared_knights["mordred"])
+    fight(prepared_knights["arthur"], prepared_knights["red_knight"])
 
-    return \
-        {
-            locals()["lancelot"].name: locals()["lancelot"].hp,
-            locals()["arthur"].name: locals()["arthur"].hp,
-            locals()["mordred"].name: locals()["mordred"].hp,
-            locals()["red_knight"].name: locals()["red_knight"].hp
-        }
-
-
-print(battle(KNIGHTS))
+    return {knight.name: knight.hp for knight in prepared_knights.values()}

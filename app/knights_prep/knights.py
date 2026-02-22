@@ -1,3 +1,4 @@
+from __future__ import annotations
 from app.knights_prep.prep import Armour, Weapon, Potion
 
 
@@ -7,10 +8,10 @@ class Knight:
         self.name = name
         self.power = power
         self.hp = hp
-        self.armour_list = []
+        self.armour_list: list[Armour] = []
         self.protection = 0
-        self.weapon = None
-        self.potion = None
+        self.weapon: Weapon | None = None
+        self.potion: Potion | None = None
 
     def get_armoured(self, armour: "Armour") -> None:
         self.armour_list.append(armour)
